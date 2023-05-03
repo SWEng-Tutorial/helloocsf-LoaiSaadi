@@ -64,16 +64,21 @@ public class SimpleServer extends AbstractServer {
 				Date time = new java.util.Date(System.currentTimeMillis());
 				message.setMessage(new SimpleDateFormat("HH:mm:ss").format(time));
 				client.sendToClient(message);
+
+				SimpleDateFormat sdfTime = new SimpleDateFormat("HH:mm:ss");
+				Date now = new Date();
+				String strTime = sdfTime.format(now);
+				message.setMessage(strTime);
+				client.sendToClient(message);
 			}
 			else if (request.startsWith("multiply")){
 				//add code here to multiply 2 numbers received in the message and send result back to client
 				//(use substring method as shown above)
 				//message format: "multiply n*m"
 				String expression = request.substring(9);
-				ScriptEngineManager MyMgr = new ScriptEngineManager();  // Declaring a "ScriptEngineManager"
-				ScriptEngine MathEng = MyMgr.getEngineByName("JavaScript"); // Declaring a "ScriptEngine"
-				String Exp = (String) MathEng.eval(expression);
-				message.setMessage(Exp);
+				String[] arrOfStr = expression.split("\\*");
+				String s = String.valueOf(Integer.parseInt(arrOfStr[0]) * Integer.parseInt(arrOfStr[1]));
+				message.setMessage(s);
 				client.sendToClient(message);
 			}else{
 				//add code here to send received message to all clients.
@@ -82,12 +87,11 @@ public class SimpleServer extends AbstractServer {
 					// message received: "Good morning"
 					// message sent: "Good morning"
 				//see code for changing submitters IDs for help
+				message.setMessage(request);
 				sendToAllClients(message);
 			}
 		} catch (IOException e1) {
 			e1.printStackTrace();
-		} catch (ScriptException e) {
-			throw new RuntimeException(e);
 		}
 	}
 
